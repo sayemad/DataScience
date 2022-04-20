@@ -30,7 +30,7 @@ with open("FBI_CrimeData_2016.json") as json_file:
         print(df)
         df.plot.bar(x="Regions", y="Incidents", title= title,figsize=(8,6),legend=False,
                 color=['#0059b3', '#ff9933', '#009900', '#ff0000'])
-         def accum_violent_crime(key,crime,crime_list):
+   def accum_violent_crime(key,crime,crime_list):
         
         violent_by_region ={}
         for crime_dict in crime_list:
@@ -71,6 +71,47 @@ with open("FBI_CrimeData_2016.json") as json_file:
         pdDict = { "Quarter": dataSeries}
         df = pd.DataFrame(pdDict)
         df.plot.pie(y='Quarter',label="",title="Violent crimes in percentage by Region",legend=False,figsize=(8,8),autopct='%1.2f%%',shadow=True)
+    def accum_nonviolent_crime(key, crime,crime_list):
+        nonviolent_by_region ={}
+        for crime_dict in crime_list:
+            if crime_dict[key] in nonviolent_by_region:
+                Region = crime_dict[key]
+                nonviolent_crimes = int(crime_dict[crime[0]])+int(crime_dict[crime[1]])+int(crime_dict[crime[2]])
+                nonviolent_by_region[Region]= nonviolent_crimes + int(nonviolent_by_region[Region])
+            else:
+                Region = crime_dict[key]
+                nonviolent_crimes = int(crime_dict[crime[0]])+int(crime_dict[crime[1]])+int(crime_dict[crime[2]])
+                nonviolent_by_region[Region] = nonviolent_crimes
+        return nonviolent_by_region
+    non_violent_crimes = ['Burglary','Theft','Vehicle_Theft']
+    nonviolent_by_region = accum_nonviolent_crime('Region', non_violent_crimes,crime_list)
+    
+    
+    
+    #Prints Dicts
+    print(murder_by_region)
+    print(violent_by_region)
+    print(nonviolent_by_region)
+    
+    
+    #Charts
+    barchart(murder_by_region,'Murder by Region')
+    barchart(violent_by_region,'Violent Crimes by Region')
+    barchart(nonviolent_by_region,'Non-violent Crimes by Region')
+    
+    #Piechart
+    piechart(violent_by_region,'Violent Crimes by Region')
+    
+    #top ten cities by violent crime
+    CrimebyCity = accum_violent_crime('City',crimes,crime_list)
+    sort_city = sorted(CrimebyCity.items(), key=lambda x: x[1], reverse=True)
+    top_ten= list(sort_city)[:10]
+    print("\n", "Top 10 cities by most Violent Crimes")
+    print("{}  {} {} ".format("Number",'City','Crimes'))
+    for cityIndex in range(len(top_ten)):
+        print("{0}   {1}   {2} ".format(cityIndex + 1, top_ten[cityIndex][0], top_ten[cityIndex][1]))
+    
+
 
 
     
